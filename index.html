@@ -619,7 +619,9 @@ function updateSidebarAlerts(polls) {
 function updateKPIs(polls) {
   document.getElementById('kpiTotal').textContent = polls.length;
   document.getElementById('kpiInstitutos').textContent = new Set(polls.map(p=>p.source)).size;
-  document.getElementById('kpiCandidatos').textContent = new Set(polls.flatMap(p=>p.candidates.map(c=>c.name))).size;
+  const candFilter = activeFilters.candidato;
+  const allCands = new Set(polls.flatMap(p=>p.candidates.filter(c=>!candFilter.length||candFilter.includes(c.name)).map(c=>c.name)));
+  document.getElementById('kpiCandidatos').textContent = allCands.size;
   if(polls.length) {
     const dates = polls.map(p=>p.date).sort();
     document.getElementById('kpiUltima').textContent = formatDate(dates[dates.length-1]);
