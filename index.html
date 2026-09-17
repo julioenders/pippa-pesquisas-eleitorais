@@ -31,7 +31,7 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
 .thermo-green{background:rgba(34,197,94,.15);color:#22c55e}
 .thermo-yellow{background:rgba(255,197,66,.15);color:#ffc542}
 .thermo-orange{background:rgba(255,140,66,.15);color:#ff8c42}
-.cargo-bar{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 24px;overflow-x:auto}
+.cargo-bar{background:var(--surface);border-bottom:1px solid var(--border);display:flex;justify-content:center;padding:0 24px;overflow-x:auto}
 .cargo-tab{padding:12px 22px;font-size:14px;font-weight:600;color:var(--text-muted);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
 .cargo-tab:hover{color:var(--text)}
 .cargo-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
@@ -142,7 +142,7 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
     <div class="header-left">
       <div>
         <div class="logo">PIPPA Eleicoes</div>
-        <div class="logo-sub">Agregador de Pesquisas Eleitorais 2026</div>
+        <div class="logo-sub">Plataforma de Inteligencia em Politicas Publicas Aplicadas — Pesquisas Eleitorais 2026</div>
       </div>
       <div class="thermometer" id="thermometer">Carregando...</div>
     </div>
@@ -565,8 +565,8 @@ function updateSidebarAlerts(polls) {
   const latest = dates.length ? dates[dates.length-1] : null;
 
   if(isProporcional) {
-    alerts.push({type:'warn', title:'Cobertura limitada',
-      text:'Pesquisas para '+cargo+' sao raras. Institutos focam em cargos majoritarios (presidente, governador, senador) pois ha centenas de candidatos por estado.'});
+    alerts.push({type:'warn', title:'Poucas pesquisas para deputados',
+      text:'Institutos como Datafolha, Ipec e Quaest nao costumam pesquisar candidatos a deputado. Novas pesquisas podem surgir conforme a eleicao se aproxima — use "Consultar APIs" para atualizar.'});
   }
 
   if(nPolls > 0 && nPolls < 5 && !isProporcional) {
@@ -601,12 +601,6 @@ function updateSidebarAlerts(polls) {
           text:pct+'% das pesquisas usam coleta '+mainMethod[0]+'. Metodologias diferentes podem gerar resultados distintos.'});
       }
     }
-  }
-
-  const elAvgs = getElectioLabAverages();
-  if(elAvgs) {
-    alerts.push({type:'info', title:'Media ponderada ElectioLab',
-      text:'Ranking usa medias ponderadas oficiais da ElectioLab com intervalo de confianca. Aplique filtros para ver agregacao propria do PIPPA.'});
   }
 
   if(nPolls >= 15) {
