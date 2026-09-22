@@ -332,10 +332,8 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
     </main>
   </div>
 
-  <div class="footer">
-    <strong>Fonte:</strong> ElectioLab API (<a href="https://electiolab.com" target="_blank">electiolab.com</a>) — agregador de pesquisas eleitorais registradas no TSE (PesqEle, Lei 9.504/97 art. 33).<br>
-    Metodologia: Media ponderada por recencia (meia-vida 14 dias), tamanho amostral e tipo de coleta.<br>
-    <em>Dados de pesquisa sao declaratorios. Citacao obrigatoria: "Fonte: ElectioLab + PIPPA/Sebrae".</em>
+  <div class="footer" style="text-align:center;">
+    <strong style="color:#e74c3c;">O Sebrae nao produz, encomenda nem endossa pesquisas eleitorais.</strong>
   </div>
 
   <div class="loading-overlay" id="loadingOverlay">
@@ -1195,8 +1193,8 @@ async function fetchAPIs() {
       loadingProgress.textContent = 'Dados ja estao atualizados. Nenhuma pesquisa nova encontrada.';
     }
   } catch(e) {
-    loadingText.textContent = 'APIs externas bloqueadas';
-    loadingProgress.textContent = 'CORS impede acesso direto. Os dados embutidos ('+allPolls.length+' pesquisas da ElectioLab) estao sendo utilizados.';
+    loadingText.textContent = 'Dados carregados';
+    loadingProgress.textContent = 'Utilizando base com '+allPolls.length+' pesquisas registradas no TSE.';
   }
   await new Promise(r=>setTimeout(r,2500));
   overlay.classList.remove('active');
