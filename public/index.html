@@ -27,6 +27,8 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
 .btn-outline:hover{border-color:var(--accent);color:var(--accent);background:transparent}
+.info-btn{background:transparent;border:1px solid var(--border);color:var(--text-muted);width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.info-btn:hover{border-color:var(--accent);color:var(--accent)}
 .thermometer{display:flex;align-items:center;gap:6px;font-size:12px;padding:4px 12px;border-radius:20px}
 .thermo-green{background:rgba(34,197,94,.15);color:#22c55e}
 .thermo-yellow{background:rgba(255,197,66,.15);color:#ffc542}
@@ -154,10 +156,10 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
         <div class="logo">PIPPA Eleicoes</div>
         <div class="logo-sub">Plataforma de Inteligencia em Politicas Publicas Aplicadas — Pesquisas Eleitorais 2026</div>
       </div>
+      <button class="info-btn" onclick="openMethodologyModal()" title="Metodologia e Fontes">&#8505;</button>
       <div class="thermometer" id="thermometer">Carregando...</div>
     </div>
     <div class="header-controls">
-      <button class="btn btn-outline" style="padding:8px 10px;font-size:16px;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center" onclick="openMethodologyModal()" title="Metodologia e Fontes">&#9432;</button>
       <button class="btn btn-outline" id="btnFetch" onclick="fetchAPIs()">&#128269; Consultar APIs</button>
       <button class="btn" onclick="exportWhatsApp()">&#128172; Exportar WhatsApp</button>
     </div>
