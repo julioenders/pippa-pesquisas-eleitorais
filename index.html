@@ -377,7 +377,26 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
         <p><strong style="color:var(--accent)">Tendencia</strong><br>
         Regressao linear sobre a serie temporal (minimos quadrados). O coeficiente angular e multiplicado por 7 para expressar a variacao em <em>pontos percentuais por semana</em> (pp/sem). Setas: &#9650; subindo (&gt;0,3 pp/sem) · &#9660; caindo (&lt;-0,3 pp/sem) · &#9679; estavel. Requer ao menos 3 pesquisas.</p>
 
-        <p style="color:var(--text-muted);font-size:11px;margin-top:12px;border-top:1px solid var(--border);padding-top:8px">Fonte: ElectioLab — agregador de pesquisas registradas no TSE. Todos os dados sao declaratorios.</p>
+        <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px">
+        <p><strong style="color:var(--warning)">&#9888; Fonte de Dados e Confiabilidade</strong></p>
+
+        <p><strong style="color:var(--accent)">Origem dos dados</strong><br>
+        Os dados sao fornecidos pela <strong>ElectioLab</strong> (<a href="https://electiolab.com" target="_blank" style="color:var(--accent)">electiolab.com</a>), um agregador independente que consolida pesquisas eleitorais registradas no TSE (Tribunal Superior Eleitoral), conforme exigido pela Lei 9.504/97, art. 33. A ElectioLab nao produz pesquisas proprias — apenas coleta, organiza e disponibiliza via API.</p>
+
+        <p><strong style="color:var(--accent)">Institutos de pesquisa</strong><br>
+        As pesquisas sao conduzidas por institutos independentes (Datafolha, Quaest, Atlas Intel, Real Time Big Data, entre outros). Cada pesquisa mantem a identificacao do instituto, data, tamanho amostral e metodologia, permitindo rastreabilidade da origem.</p>
+
+        <p><strong style="color:var(--accent)">Riscos e limitacoes</strong><br>
+        &#8226; <em>Selecao parcial</em> — a ElectioLab pode incluir ou excluir pesquisas sem que tenhamos controle sobre o criterio.<br>
+        &#8226; <em>Atraso na atualizacao</em> — pesquisas recentes podem levar horas ou dias para serem incorporadas.<br>
+        &#8226; <em>Sem auditabilidade completa</em> — nao e possivel verificar se todas as pesquisas registradas no TSE estao refletidas.<br>
+        &#8226; <em>Sem SLA ou contrato</em> — a API e gratuita e pode ser descontinuada sem aviso.</p>
+
+        <p><strong style="color:var(--accent)">Por que nao acessamos o TSE diretamente?</strong><br>
+        O TSE nao disponibiliza API publica para pesquisas eleitorais. O sistema PesqEle e uma aplicacao web (JSF) sem endpoints REST, e o portal de Dados Abertos publica apenas resultados historicos de eleicoes. A ElectioLab contorna isso com coletores automatizados server-side.</p>
+        </div>
+
+        <p style="color:var(--danger);font-size:12px;margin-top:14px;padding:10px;background:rgba(255,77,106,.08);border-radius:var(--radius);border:1px solid rgba(255,77,106,.2)"><strong>Disclaimer:</strong> Dados agregados pela ElectioLab a partir de pesquisas registradas no TSE. O Sebrae nao produz, encomenda nem endossa pesquisas eleitorais. Este painel e uma ferramenta de inteligencia para acompanhamento do cenario politico — os dados sao declaratorios e de responsabilidade dos institutos de pesquisa.</p>
       </div>
       <div class="modal-actions">
         <button class="btn" onclick="closeMethodologyModal()">Fechar</button>
