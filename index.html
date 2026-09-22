@@ -157,6 +157,7 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
       <div class="thermometer" id="thermometer">Carregando...</div>
     </div>
     <div class="header-controls">
+      <button class="btn btn-outline" style="padding:8px 10px;font-size:16px;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center" onclick="openMethodologyModal()" title="Metodologia e Fontes">&#9432;</button>
       <button class="btn btn-outline" id="btnFetch" onclick="fetchAPIs()">&#128269; Consultar APIs</button>
       <button class="btn" onclick="exportWhatsApp()">&#128172; Exportar WhatsApp</button>
     </div>
@@ -257,7 +258,7 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
       </div>
 
       <div class="dar-content" id="dar-agregado">
-        <div class="section-title" style="display:flex;align-items:center;gap:10px">Agregado Estatistico <button class="btn btn-outline" style="padding:4px 12px;font-size:12px" onclick="openMethodologyModal()">&#9432; Metodologia</button></div>
+        <div class="section-title">Agregado Estatistico</div>
         <div class="section-sub">Media ponderada por recencia (meia-vida 14 dias), tamanho amostral (raiz de n) e metodologia (presencial > telefonica > online). Intervalos de confianca calculados via ElectioLab.</div>
         <div class="chart-card" style="overflow-x:auto">
           <table class="agg-table">
@@ -353,50 +354,81 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
   </div>
 
   <div class="modal-backdrop" id="methodologyModal" onclick="if(event.target===this)closeMethodologyModal()">
-    <div class="modal" style="max-width:640px">
-      <div class="modal-title">&#9432; Metodologia — Agregado Estatistico</div>
-      <div class="modal-content" style="text-align:left;font-size:13px;line-height:1.8">
-        <p><strong style="color:var(--accent)">Media Ponderada</strong><br>
-        Combina tres fatores multiplicativos: <em>recencia</em> (decaimento exponencial com meia-vida de 14 dias — pesquisa de 14 dias atras recebe peso 0,5), <em>tamanho amostral</em> (raiz quadrada de n, normalizada pelo maior n) e <em>metodologia</em> (presencial=1,0 · telefonica=0,9 · mista=0,85 · online=0,8). Formula: &Sigma;(peso &times; %) / &Sigma;(peso).</p>
+    <div class="modal" style="max-width:680px;max-height:85vh;overflow-y:auto">
+      <div class="modal-title">&#9432; Metodologia e Fontes</div>
+      <div class="modal-content" style="text-align:left;font-size:13px;line-height:1.7">
 
-        <p><strong style="color:var(--accent)">Media Simples</strong><br>
-        Media aritmetica de todas as intencoes de voto registradas para o candidato, sem qualquer ponderacao.</p>
+        <p style="color:var(--danger);font-size:12px;padding:10px;background:rgba(255,77,106,.08);border-radius:var(--radius);border:1px solid rgba(255,77,106,.2);margin-bottom:16px"><strong>O Sebrae nao produz, encomenda nem endossa pesquisas eleitorais.</strong> Este painel e uma ferramenta de inteligencia para acompanhamento do cenario politico. Os dados sao declaratorios e de responsabilidade dos institutos de pesquisa.</p>
 
-        <p><strong style="color:var(--accent)">Mediana</strong><br>
-        Valor central da serie ordenada. Mais resistente a outliers que a media — se uma pesquisa isolada traz resultado muito diferente, a mediana nao se desloca tanto.</p>
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--accent)">Dicionario de Indicadores</div>
 
-        <p><strong style="color:var(--accent)">Desvio Padrao</strong><br>
-        Dispersao dos resultados em relacao a media (correcao de Bessel, n-1). Desvio alto indica grande variacao entre os institutos.</p>
-
-        <p><strong style="color:var(--accent)">Min–Max</strong><br>
-        Menor e maior intencao de voto registrada. Mostra a amplitude total das pesquisas.</p>
-
-        <p><strong style="color:var(--accent)">Pesquisas</strong><br>
-        Quantidade de registros (datapoints) para aquele candidato no periodo e filtros selecionados.</p>
-
-        <p><strong style="color:var(--accent)">Tendencia</strong><br>
-        Regressao linear sobre a serie temporal (minimos quadrados). O coeficiente angular e multiplicado por 7 para expressar a variacao em <em>pontos percentuais por semana</em> (pp/sem). Setas: &#9650; subindo (&gt;0,3 pp/sem) · &#9660; caindo (&lt;-0,3 pp/sem) · &#9679; estavel. Requer ao menos 3 pesquisas.</p>
-
-        <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px">
-        <p><strong style="color:var(--warning)">&#9888; Fonte de Dados e Confiabilidade</strong></p>
-
-        <p><strong style="color:var(--accent)">Origem dos dados</strong><br>
-        Os dados sao fornecidos pela <strong>ElectioLab</strong> (<a href="https://electiolab.com" target="_blank" style="color:var(--accent)">electiolab.com</a>), um agregador independente que consolida pesquisas eleitorais registradas no TSE (Tribunal Superior Eleitoral), conforme exigido pela Lei 9.504/97, art. 33. A ElectioLab nao produz pesquisas proprias — apenas coleta, organiza e disponibiliza via API.</p>
-
-        <p><strong style="color:var(--accent)">Institutos de pesquisa</strong><br>
-        As pesquisas sao conduzidas por institutos independentes (Datafolha, Quaest, Atlas Intel, Real Time Big Data, entre outros). Cada pesquisa mantem a identificacao do instituto, data, tamanho amostral e metodologia, permitindo rastreabilidade da origem.</p>
-
-        <p><strong style="color:var(--accent)">Riscos e limitacoes</strong><br>
-        &#8226; <em>Selecao parcial</em> — a ElectioLab pode incluir ou excluir pesquisas sem que tenhamos controle sobre o criterio.<br>
-        &#8226; <em>Atraso na atualizacao</em> — pesquisas recentes podem levar horas ou dias para serem incorporadas.<br>
-        &#8226; <em>Sem auditabilidade completa</em> — nao e possivel verificar se todas as pesquisas registradas no TSE estao refletidas.<br>
-        &#8226; <em>Sem SLA ou contrato</em> — a API e gratuita e pode ser descontinuada sem aviso.</p>
-
-        <p><strong style="color:var(--accent)">Por que nao acessamos o TSE diretamente?</strong><br>
-        O TSE nao disponibiliza API publica para pesquisas eleitorais. O sistema PesqEle e uma aplicacao web (JSF) sem endpoints REST, e o portal de Dados Abertos publica apenas resultados historicos de eleicoes. A ElectioLab contorna isso com coletores automatizados server-side.</p>
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+          <strong style="color:var(--accent)">Media Ponderada</strong><br>
+          <em style="color:var(--text-muted)">Como e calculada:</em> Combina tres fatores multiplicativos — <strong>recencia</strong> (decaimento exponencial com meia-vida de 14 dias: pesquisa de 14 dias atras recebe peso 0,5; de 28 dias, peso 0,25), <strong>tamanho amostral</strong> (&radic;n normalizado pelo maior n do conjunto) e <strong>metodologia</strong> (presencial=1,0 &middot; telefonica=0,9 &middot; mista=0,85 &middot; online=0,8). Formula: &Sigma;(peso &times; %) &divide; &Sigma;(peso).<br>
+          <em style="color:var(--text-muted)">Como interpretar:</em> Reflete a intencao de voto mais provavel, priorizando pesquisas recentes, com amostras maiores e metodologia mais robusta. E o indicador principal do painel.
         </div>
 
-        <p style="color:var(--danger);font-size:12px;margin-top:14px;padding:10px;background:rgba(255,77,106,.08);border-radius:var(--radius);border:1px solid rgba(255,77,106,.2)"><strong>Disclaimer:</strong> Dados agregados pela ElectioLab a partir de pesquisas registradas no TSE. O Sebrae nao produz, encomenda nem endossa pesquisas eleitorais. Este painel e uma ferramenta de inteligencia para acompanhamento do cenario politico — os dados sao declaratorios e de responsabilidade dos institutos de pesquisa.</p>
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+          <strong style="color:var(--accent)">Media Simples</strong><br>
+          <em style="color:var(--text-muted)">Como e calculada:</em> Soma de todas as intencoes de voto dividida pela quantidade de pesquisas. Sem qualquer ponderacao.<br>
+          <em style="color:var(--text-muted)">Como interpretar:</em> Referencia basica. Se diferir muito da media ponderada, indica que pesquisas antigas ou de menor qualidade estao puxando o resultado para cima ou para baixo.
+        </div>
+
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+          <strong style="color:var(--accent)">Mediana</strong><br>
+          <em style="color:var(--text-muted)">Como e calculada:</em> Valor central da serie ordenada. Se houver numero par de pesquisas, media dos dois valores centrais.<br>
+          <em style="color:var(--text-muted)">Como interpretar:</em> Mais resistente a outliers que a media. Se uma pesquisa isolada traz resultado muito diferente das demais, a mediana nao se desloca tanto. Util para verificar se um candidato tem posicao consistente.
+        </div>
+
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+          <strong style="color:var(--accent)">Desvio Padrao</strong><br>
+          <em style="color:var(--text-muted)">Como e calculado:</em> Dispersao dos resultados em relacao a media, com correcao de Bessel (divisao por n-1). Formula: &radic;[&Sigma;(v - media)&sup2; &divide; (n-1)].<br>
+          <em style="color:var(--text-muted)">Como interpretar:</em> Desvio baixo (&lt;3) significa que os institutos concordam. Desvio alto (&gt;5) indica forte divergencia entre os institutos — cenario incerto.
+        </div>
+
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+          <strong style="color:var(--accent)">Min–Max</strong><br>
+          <em style="color:var(--text-muted)">Como e calculado:</em> Menor e maior intencao de voto registrada entre todas as pesquisas.<br>
+          <em style="color:var(--text-muted)">Como interpretar:</em> Mostra a amplitude total. Um intervalo largo (ex: 17–68%) revela grande incerteza; um intervalo curto indica consenso entre os institutos.
+        </div>
+
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+          <strong style="color:var(--accent)">Pesquisas</strong><br>
+          <em style="color:var(--text-muted)">Como e calculado:</em> Quantidade de registros (datapoints) para o candidato, considerando os filtros ativos (cargo, estado, instituto).<br>
+          <em style="color:var(--text-muted)">Como interpretar:</em> Quanto mais pesquisas, mais confiavel o agregado. Candidatos com menos de 5 pesquisas devem ser interpretados com cautela.
+        </div>
+
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+          <strong style="color:var(--accent)">Tendencia</strong><br>
+          <em style="color:var(--text-muted)">Como e calculada:</em> Regressao linear (minimos quadrados) sobre a serie temporal. O coeficiente angular e multiplicado por 7 para expressar em pontos percentuais por semana (pp/sem). Requer ao menos 3 pesquisas.<br>
+          <em style="color:var(--text-muted)">Como interpretar:</em> &#9650; subindo (&gt;0,3 pp/sem) — candidato em crescimento. &#9660; caindo (&lt;-0,3 pp/sem) — candidato perdendo forca. &#9679; estavel — sem variacao significativa.
+        </div>
+
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-top:16px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--warning)">Fonte de Dados e Confiabilidade</div>
+
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+          <strong style="color:var(--accent)">Origem dos dados</strong><br>
+          Dados fornecidos pela <strong>ElectioLab</strong> (<a href="https://electiolab.com" target="_blank" style="color:var(--accent)">electiolab.com</a>), agregador independente que consolida pesquisas registradas no TSE (Lei 9.504/97, art. 33). A ElectioLab nao produz pesquisas — coleta, organiza e disponibiliza via API.
+        </div>
+
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+          <strong style="color:var(--accent)">Institutos</strong><br>
+          Datafolha, Quaest, Atlas Intel, Real Time Big Data, PoderData, entre outros. Cada pesquisa mantem instituto, data, amostra e metodologia, permitindo rastreabilidade.
+        </div>
+
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+          <strong style="color:var(--accent)">Riscos e limitacoes</strong><br>
+          &#8226; <em>Selecao parcial</em> — a ElectioLab pode incluir ou excluir pesquisas sem controle externo.<br>
+          &#8226; <em>Atraso</em> — pesquisas recentes podem levar horas ou dias para serem incorporadas.<br>
+          &#8226; <em>Sem auditabilidade</em> — nao ha como verificar se todas as pesquisas do TSE estao refletidas.<br>
+          &#8226; <em>Sem SLA</em> — API gratuita, pode ser descontinuada sem aviso.
+        </div>
+
+        <div style="background:var(--surface);border-radius:var(--radius);padding:12px">
+          <strong style="color:var(--accent)">Por que nao acessamos o TSE diretamente?</strong><br>
+          O TSE nao disponibiliza API publica. O PesqEle e uma aplicacao web sem endpoints REST. O portal Dados Abertos publica apenas resultados historicos. A ElectioLab contorna isso com coletores automatizados server-side.
+        </div>
+
       </div>
       <div class="modal-actions">
         <button class="btn" onclick="closeMethodologyModal()">Fechar</button>
