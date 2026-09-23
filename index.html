@@ -606,7 +606,7 @@ function switchCargo(cargo, el) {
   activeFilters = {estado:[],instituto:[],candidato:[]};
   document.getElementById('searchInput').value = '';
   const stTab = document.getElementById('darTabSegundoTurno');
-  if(stTab) stTab.style.display = (cargo === 'presidente' || cargo === 'governador') ? '' : 'none';
+  if(stTab) stTab.style.display = (cargo === 'presidente') ? '' : 'none';
   switchDar('dashboard');
 }
 
@@ -1252,15 +1252,10 @@ function getScenarioKey(poll) {
 function renderSegundoTurno() {
   destroyChart('segundoturno');
 
-  const stFilter = activeFilters.estado || [];
-  const filtered2T = SECOND_ROUND.filter(p => {
-    if(p.position !== currentCargo) return false;
-    if(currentCargo === 'governador' && stFilter.length && !stFilter.includes(p.state)) return false;
-    return true;
-  });
+  const filtered2T = SECOND_ROUND.filter(p => p.position === 'presidente');
 
-  const cargoLabel = currentCargo === 'presidente' ? 'Presidenciais' : 'Governadores';
-  const stateLabel = (currentCargo === 'governador' && stFilter.length === 1) ? ' — ' + stFilter[0] : '';
+  const cargoLabel = 'Presidenciais';
+  const stateLabel = '';
   document.querySelector('#dar-segundoturno .section-title').innerHTML =
     '2&ordm; Turno — Cenarios ' + cargoLabel + stateLabel + ' <span class="tab-count" id="segundoturnoCount"></span>';
 
@@ -1285,8 +1280,7 @@ function renderSegundoTurno() {
   if(!currentScenario) {
     document.getElementById('matchupSummary').innerHTML =
       '<div style="text-align:center;padding:40px;color:var(--text-muted)">' +
-      (currentCargo==='governador' ? 'Selecione um estado no filtro lateral e clique em <strong>Consultar APIs</strong> para buscar cenarios de 2&ordm; turno para governadores.' :
-      'Nenhum cenario de 2&ordm; turno disponivel.') + '</div>';
+      'Nenhum cenario de 2&ordm; turno disponivel.' + '</div>';
     document.getElementById('segundoturnoPolls').innerHTML = '';
     return;
   }
