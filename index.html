@@ -1113,22 +1113,27 @@ async function fetchAPIs() {
     const round2 = active2026.filter(e => e.round === 2);
     loadingProgress.textContent = active2026.length+' eleicoes ativas encontradas. Buscando pesquisas...';
 
+    const existingKeys = new Set(allPolls.map(ep => ep.source+'|'+ep.date+'|'+ep.position+'|'+(ep.state||'BR')));
+    const existingSR = new Set(SECOND_ROUND.map(ep => ep.source+'|'+ep.date+'|'+(ep.position||'presidente')));
+
     for(const election of round1) {
       loadingProgress.textContent = 'Buscando: '+election.name+'...';
       try {
-        const pollsResp = await fetch(ELECTIOLAB_BASE+'/polls?election_id='+election.id+'&limit=100');
+        const pollsResp = await fetch(ELECTIOLAB_BASE+'/polls?election_id='+election.id+'&limit=500');
         if(pollsResp.ok) {
           const pollsData = await pollsResp.json();
           for(const p of pollsData.data) {
-            const exists = allPolls.some(ep => ep.source===(p.institute?.name||'') && ep.date===p.publication_date && ep.position===election.type && ep.state===election.state);
-            if(!exists) {
+            const pState = election.state||'BR';
+            const key = (p.institute?.name||'')+'|'+p.publication_date+'|'+election.type+'|'+pState;
+            if(!existingKeys.has(key)) {
+              existingKeys.add(key);
               allPolls.push({
                 id:'api_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
                 source:p.institute?.name||'Desconhecido',
                 date:p.publication_date,
                 year:2026,
                 position:election.type,
-                state:election.state,
+                state:pState,
                 sample:p.sample_size||0,
                 margin:p.margin_of_error||0,
                 method:p.methodology||'mista',
@@ -1144,12 +1149,13 @@ async function fetchAPIs() {
     for(const election of round2) {
       loadingProgress.textContent = 'Buscando 2o turno: '+election.name+'...';
       try {
-        const pollsResp = await fetch(ELECTIOLAB_BASE+'/polls?election_id='+election.id+'&limit=100');
+        const pollsResp = await fetch(ELECTIOLAB_BASE+'/polls?election_id='+election.id+'&limit=500');
         if(pollsResp.ok) {
           const pollsData = await pollsResp.json();
           for(const p of pollsData.data) {
-            const exists = SECOND_ROUND.some(ep => ep.source===(p.institute?.name||'') && ep.date===p.publication_date && ep.position===election.type);
-            if(!exists && (p.results||[]).length >= 2) {
+            const srKey = (p.institute?.name||'')+'|'+p.publication_date+'|'+election.type;
+            if(!existingSR.has(srKey) && (p.results||[]).length >= 2) {
+              existingSR.add(srKey);
               SECOND_ROUND.push({
                 source:p.institute?.name||'Desconhecido',
                 date:p.publication_date,
