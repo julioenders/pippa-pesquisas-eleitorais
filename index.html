@@ -169,8 +169,6 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
     <div class="cargo-tab active" data-cargo="presidente" onclick="switchCargo('presidente',this)">Presidente <span class="cargo-count" id="cnt-presidente"></span></div>
     <div class="cargo-tab" data-cargo="governador" onclick="switchCargo('governador',this)">Governador <span class="cargo-count" id="cnt-governador"></span></div>
     <div class="cargo-tab" data-cargo="senador" onclick="switchCargo('senador',this)">Senador <span class="cargo-count" id="cnt-senador"></span></div>
-    <div class="cargo-tab" data-cargo="deputado_federal" onclick="switchCargo('deputado_federal',this)">Dep. Federal <span class="cargo-count" id="cnt-deputado_federal"></span></div>
-    <div class="cargo-tab" data-cargo="deputado_estadual" onclick="switchCargo('deputado_estadual',this)">Dep. Estadual <span class="cargo-count" id="cnt-deputado_estadual"></span></div>
   </div>
 
   <div class="layout">
@@ -449,8 +447,7 @@ const SECOND_ROUND = [{"source":"Atlas Intel","date":"2026-09-10","sample":5000,
 
 const POSITION_LABELS = {
   presidente:'Presidente', governador:'Governador',
-  senador:'Senador', deputado_federal:'Deputado Federal',
-  deputado_estadual:'Deputado Estadual', deputado_distrital:'Deputado Distrital',
+  senador:'Senador',
 };
 const SERIES_COLORS = [
   '#4f8cff','#ff4d6a','#22c55e','#ffc542','#a855f7',
@@ -461,7 +458,8 @@ const METHODOLOGY_WEIGHTS = {presencial:1.0,telefonica:0.9,mista:0.85,online:0.8
 const RECENCY_HALF_LIFE = 14;
 const ELECTIOLAB_BASE = 'https://electiolab.com/api/v1';
 
-let allPolls = RAW_POLLS.map(p => ({
+const CARGOS_ATIVOS = ['presidente','governador','senador'];
+let allPolls = RAW_POLLS.filter(p => CARGOS_ATIVOS.includes(p.pos)).map(p => ({
   id:p.id, source:p.src, date:p.dt, year:2026,
   position:p.pos, state:p.uf, sample:p.n,
   margin:p.me, method:p.mt,
@@ -494,9 +492,9 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateCargoCounts() {
-  const cargos = ['presidente','governador','senador','deputado_federal','deputado_estadual'];
+  const cargos = ['presidente','governador','senador'];
   cargos.forEach(c => {
-    const n = allPolls.filter(p=>p.position===c || (c==='deputado_estadual' && p.position==='deputado_distrital')).length;
+    const n = allPolls.filter(p=>p.position===c).length;
     const el = document.getElementById('cnt-'+c);
     if(el) el.textContent = n;
   });
@@ -580,9 +578,7 @@ function updateBadge(key) {
 }
 
 function matchesCargo(pollPosition, cargo) {
-  if(pollPosition === cargo) return true;
-  if(cargo === 'deputado_estadual' && pollPosition === 'deputado_distrital') return true;
-  return false;
+  return pollPosition === cargo;
 }
 
 function getFilteredPolls() {
@@ -628,23 +624,14 @@ function renderCurrentView() {
   buildFilterChips();
   const polls = getFilteredPolls();
   const isEmpty = polls.length === 0;
-  const isLow = polls.length > 0 && polls.length <= 3;
-  const isProporcional = currentCargo === 'deputado_federal' || currentCargo === 'deputado_estadual';
 
   const emptyEl = document.getElementById('emptyState');
   const emptyText = document.getElementById('emptyText');
   const emptyDetail = document.getElementById('emptyDetail');
 
-  if(isEmpty || (isLow && isProporcional)) {
+  if(isEmpty) {
     emptyEl.style.display = 'block';
-    if(isProporcional) {
-      emptyText.textContent = isEmpty
-        ? 'Sem pesquisas para ' + (POSITION_LABELS[currentCargo]||currentCargo) + ' neste estado.'
-        : polls.length + ' pesquisa(s) encontrada(s) — cobertura limitada.';
-      emptyDetail.textContent = 'Pesquisas eleitorais para cargos proporcionais (deputados) sao raras no Brasil. ' +
-        'Os institutos concentram esforcos em cargos majoritarios (presidente, governador, senador), pois ' +
-        'cada estado tem centenas de candidatos a deputado. Os dados disponiveis sao exibidos abaixo quando existem.';
-    } else if(hasActiveFilters()) {
+    if(hasActiveFilters()) {
       emptyText.textContent = 'Nenhuma pesquisa encontrada com os filtros atuais.';
       emptyDetail.textContent = 'Tente limpar alguns filtros ou selecionar outro estado/instituto.';
     } else {
@@ -674,18 +661,12 @@ function updateSidebarAlerts(polls) {
   const container = document.getElementById('sidebarAlerts');
   const alerts = [];
   const cargo = POSITION_LABELS[currentCargo]||currentCargo;
-  const isProporcional = currentCargo==='deputado_federal'||currentCargo==='deputado_estadual';
   const nPolls = polls.length;
   const sources = [...new Set(polls.map(p=>p.source))];
   const dates = polls.map(p=>p.date).sort();
   const latest = dates.length ? dates[dates.length-1] : null;
 
-  if(isProporcional) {
-    alerts.push({type:'warn', title:'Poucas pesquisas para deputados',
-      text:'Institutos como Datafolha, Ipec e Quaest nao costumam pesquisar candidatos a deputado. Novas pesquisas podem surgir conforme a eleicao se aproxima — use "Consultar APIs" para atualizar.'});
-  }
-
-  if(nPolls > 0 && nPolls < 5 && !isProporcional) {
+  if(nPolls > 0 && nPolls < 5) {
     alerts.push({type:'warn', title:'Poucas pesquisas',
       text:'Apenas '+nPolls+' pesquisa(s) para '+cargo+(activeFilters.estado.length?' em '+activeFilters.estado.join(', '):'')+'. Agregacoes estatisticas podem ter baixa confiabilidade.'});
   }
@@ -1127,7 +1108,7 @@ async function fetchAPIs() {
     const electionsResp = await fetch(ELECTIOLAB_BASE+'/elections');
     if(!electionsResp.ok) throw new Error('API indisponivel');
     const elections = await electionsResp.json();
-    const active2026 = elections.data.filter(e=>e.year===2026 && e.is_active);
+    const active2026 = elections.data.filter(e=>e.year===2026 && e.is_active && CARGOS_ATIVOS.includes(e.type));
     const round1 = active2026.filter(e => !e.round || e.round === 1);
     const round2 = active2026.filter(e => e.round === 2);
     loadingProgress.textContent = active2026.length+' eleicoes ativas encontradas. Buscando pesquisas...';
